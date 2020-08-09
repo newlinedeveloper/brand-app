@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { 
     Layout, Card, Avatar,notification,Button, Input,DatePicker,Tooltip,TimePicker,Modal,Badge,Statistic,Divider,
-    Comment, Form,List,Rate,Drawer,Skeleton,Empty,Pagination
+    Comment, Form,List,Rate,Drawer,Skeleton,Empty,Pagination, Row, Col
 } from 'antd';
-import { EditOutlined, EllipsisOutlined, SettingOutlined,LikeOutlined,CoffeeOutlined,HeartOutlined } from '@ant-design/icons';
+import { EditOutlined, EllipsisOutlined, SettingOutlined,LikeOutlined,CoffeeOutlined,HeartOutlined,SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 
@@ -15,7 +15,7 @@ import moment from 'moment';
 
 const { Content } = Layout;
 const { Meta } = Card;
-const { TextArea } = Input;
+const { TextArea,Search } = Input;
 
 
 
@@ -54,6 +54,8 @@ class Recipe extends Component {
         lastName:"",
         email: "",
         userArray : [],
+        userArrayTemp:[],
+        searchField: "",
         currentPage: 1,
         totalUsers: 0,
         pageLoading: false,
@@ -93,6 +95,7 @@ class Recipe extends Component {
               { 
                 foodArray : res.data,
                 userArray: res.data,
+                userArrayTemp: res.data,
                 totalUsers: res.total
                },
             );
@@ -160,7 +163,33 @@ class Recipe extends Component {
           };
     
 
-      
+          handleSearch = (value) => {
+            this.setState({ 
+              userArray : this.state.userArrayTemp,
+              searchField : value
+             }, () => {
+                this.setState((prevState) => (
+                  {
+                    userArray : prevState.userArray.filter((user) => {
+                    if(user.first_name.toLowerCase().includes(value.toLowerCase()) || user.last_name.toLowerCase().includes(value.toLowerCase()) || user.email.toLowerCase().includes(value.toLowerCase())) {
+                      return user
+                    }
+                  })
+                }))
+              });
+          }
+        
+          handleClear = (e) => {
+            if(e.target.value === '' ) {
+              this.setState(
+                {
+                  searchField: "",
+                  //  userArray : this.state.userArrayTemp
+                  userArray:[]
+                });
+                this._getUsersInfo();
+            }
+          };
 
 
 
@@ -309,7 +338,21 @@ class Recipe extends Component {
 
 
           let content = (
-            <div>
+            <div style={{marginLeft: 50, marginRight: 50}}>
+                <Row>
+                    <Col span={6} offset={18}>
+                        <Search
+                            placeholder='Search'
+                            enterButton={<SearchOutlined/>}
+                            size="medium"
+                            allowClear
+                            onChange={this.handleClear}
+                            onSearch={this.handleSearch}
+                            // style={{ width: 250}}
+                        /> 
+                    </Col>
+                </Row>
+                
               <List
                 itemLayout="horizontal"
                 dataSource={this.state.userArray}
@@ -324,7 +367,8 @@ class Recipe extends Component {
                     <List.Item.Meta
                       avatar={
                         <Avatar
-                            src={user.avatar}
+                        size={60}
+                        src={user.avatar}
                         >
                         </Avatar>
                       }
@@ -336,10 +380,10 @@ class Recipe extends Component {
                       description={
                         <div>
                           <p>
-                            <span style={{ color: "#16bdc8" }}>{user.id}</span>
+                            <span style={{ fontSize: "12px" }}>{user.id}</span>
                             <Divider type="vertical" />
       
-                            <span style={{ fontSize: "12px" }}>{user.email}</span>
+                            <span style={{ fontSize: "14px",color: "#16bdc8" }}>{user.email}</span>
       
                             <Divider type="vertical" />
                           </p>

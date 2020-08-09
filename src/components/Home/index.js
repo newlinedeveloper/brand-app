@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { 
     Layout, Card, Avatar,notification,Button, Input,DatePicker,Tooltip,TimePicker,Modal,Badge,Statistic,Divider,
-    Comment, Form,List,Rate,Drawer,Skeleton,Empty,Pagination, Row, Col
+    Comment, Form,List,Rate,Drawer,Skeleton,Empty,Pagination, Row, Col,Descriptions
 } from 'antd';
 import { EditOutlined, EllipsisOutlined, SettingOutlined,LikeOutlined,CoffeeOutlined,HeartOutlined,SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -43,7 +43,7 @@ const CommentList = ({ comments }) => (
 
 
 
-class Recipe extends Component {
+class Home extends Component {
 
     state = {
 
@@ -58,22 +58,11 @@ class Recipe extends Component {
         searchField: "",
         currentPage: 1,
         totalUsers: 0,
+        selectedUser: null,
         pageLoading: false,
         slotModal: false,
-        description : "",
-        id: "",
         image : "",
-        category: "",
-        label: "",
-        price: "",
-        foodArray: [],
-        viewFood: false,
-        comments: [],
-        submitting: false,
-        value: '',
-        count: 1,
-        total: 1,
-        visible: false
+        
     }
 
     componentDidMount() {
@@ -93,7 +82,6 @@ class Recipe extends Component {
             console.log(res);
             this.setState(
               { 
-                foodArray : res.data,
                 userArray: res.data,
                 userArrayTemp: res.data,
                 totalUsers: res.total
@@ -102,65 +90,6 @@ class Recipe extends Component {
           }
         });
       }
-
-      range = (start, end) => {
-        const result = [];
-        for (let i = start; i < end; i++) {
-          result.push(i);
-        }
-        return result;
-      }
-
-      disabledDate = (current) => {
-        // Can not select days before today and today
-        return current && current < moment().endOf('day');
-      }
-
-      
-
-      showDrawer = () => {
-        this.setState({
-          visible: true,
-        });
-      };
-    
-      onClose = () => {
-        this.setState({
-          visible: false,
-        });
-      };
-
-      handleSubmit = () => {
-        if (!this.state.value) {
-          return;
-        }
-    
-        this.setState({
-          submitting: true,
-        });
-
-        setTimeout(() => {
-            this.setState({
-              submitting: false,
-              value: '',
-              comments: [
-                {
-                  author: 'Han Solo',
-                  avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-                  content: <p>{this.state.value}</p>,
-                  datetime: moment().fromNow(),
-                },
-                ...this.state.comments,
-              ],
-            });
-          }, 1000);
-        };
-
-        handleChange = e => {
-            this.setState({
-              value: e.target.value,
-            });
-          };
     
 
           handleSearch = (value) => {
@@ -196,143 +125,40 @@ class Recipe extends Component {
 
     render() {
 
-        const { comments, submitting, value } = this.state;
 
         let createSlotModal = (
             <Modal
                 centered
                 title={this.state.name}
                 visible={this.state.slotModal}
-                confirmLoading="true"
                 style={{marginTop: 80}}
-                footer={[
-                <Button
-                    onClick={(e) => {
-                    this.setState({ slotModal: false });
-                    }}
-                >
-                    Cancel
-                </Button>,
-                <Button 
-                    type="primary"
-                    onClick={(e) => {
-                        notification.success({
-                            message: "Recipe Ordered",
-                            placement: "bottomRight",
-                          });
-                        this.setState({ slotModal: false });
-                    }}
-                >
-                    Order Now
-                </Button>,
-                ]}
                 onCancel={(e) => {
                 this.setState({slotModal: false });
                 }}
             >
-            <div className="row">
-
-                <div className="col-sm-12">
-                    <div className="form-group">
-                        <label for="name">Name</label>
-                        <Input
-                        type="text"
-                        placeholder="Name"
-                        value={this.state.name}
-                        disabled
-                        onChange={(e) =>
-                            this.setState({
-                            name: e.target.value,
-                            errName: e.target.value !== "" ? false : true,
-                            })
-                        }
-                        />
-                    </div>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-sm-6">
-                    <div className="form-group">
-                        <label for="phone">category</label>
-                        <Input
-                        type="text"
-                        placeholder="Category"
-                        disabled
-                        value={this.state.category}
-                        onChange={(e) =>
-                            this.setState({
-                            category: e.target.value,
-                            
-                            })
-                        }
-                        />
-                    </div>
-                </div>
-                <div className="col-sm-6">
-                    <div className="form-group">
-                        <label for="phone">Label</label>
-                        <Input
-                        type="text"
-                        placeholder="Label"
-                        disabled
-                        value={this.state.label}
-                        onChange={(e) =>
-                            this.setState({
-                            label: e.target.value,
-                            
-                            })
-                        }
-                        />
-                    </div>
-                </div>
-
-
-            </div>
-            <div className="row">
-                <div className="col-sm-5">
-                    <div className="form-group">
-                        <label for="phone">Price for One</label>
-                        <Input
-                        type="text"
-                        disabled
-                        placeholder="Price"
-                        value={this.state.price}
-                        />
-                    </div>
-                </div>
-                <div className="col-sm-3">
-                    <div className="form-group">
-                        <label for="phone">Count</label>
-                        <Input
-                        type="text"
-                        placeholder="count"
-                        value={this.state.count}
-                        onChange={(e) =>
-                            this.setState({
-                                count: e.target.value,
-                        })
-                        }
-                        />
-                    </div>
-                </div>
-                <div className="col-sm-4">
-                    <div className="form-group">
-                        <label for="phone">Total Amout</label>
-                        <Input
-                        type="text"
-                        placeholder="count"
-                        value={this.state.count * this.state.total}
-                        onChange={(e) =>
-                            this.setState({
-                                count: e.target.value,
-                        })
-                        }
-                        />
-                    </div>
-                </div>
-
-
-            </div>
+                <Row>
+                <Col span={16} offset={8}>
+                    <Avatar
+                        size={100}
+                        src={this.state.image}
+                        >
+                    </Avatar>
+                </Col>
+                </Row>
+                
+                 <Descriptions layout="vertical" style={{marginTop:40}}>
+                    <Descriptions.Item label="Id">{this.state.userId}</Descriptions.Item>
+                    <Descriptions.Item label="FirstName">{this.state.firstName}</Descriptions.Item>
+                    <Descriptions.Item label="LastName">{this.state.lastName}</Descriptions.Item>
+                    <Descriptions.Item label="Email Id">{this.state.email}</Descriptions.Item>
+                    <Descriptions.Item label="image" span={2}>
+                    {this.state.image}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Status">
+                        <Badge status="processing" text="Active User" />
+                    </Descriptions.Item>
+                </Descriptions>
+            
             </Modal>
           );
 
@@ -390,9 +216,18 @@ class Recipe extends Component {
                         </div>
                       }
                       onClick={() => {
-                        this.setState({ selectedUser: user }, () => {
-                          console.log(this.state.selectedUser.isCustomerAdmin)
-                          this.setState({ userModal: true });
+                        this.setState({ 
+                            selectedUser: user,
+                            userId: user.id,
+                            name: user.first_name+" "+user.last_name,
+                            firstName: user.first_name,
+                            lastName: user.last_name,
+                            email: user.email,
+                            image: user.avatar
+                         },
+                          () => {
+                            console.log("clicked");
+                          this.setState({ slotModal: true });
                         });
                       }}
                       style={{ cursor: "pointer" }}
@@ -405,8 +240,9 @@ class Recipe extends Component {
 
 
         return (
+            
             <div style={{ padding: "2%" }}>
-                
+                {createSlotModal}
                     { this.state.userArray.length > 0 ? (
                         content
                         ) : (
@@ -436,4 +272,4 @@ class Recipe extends Component {
     }
 }
 
-export default Recipe;
+export default Home;

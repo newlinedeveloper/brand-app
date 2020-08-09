@@ -1,6 +1,6 @@
 // let context = "TEST"; //TEST (for testing) and PROD (for Production)
 export const SERVER_URI = "http://localhost:8000/api";
-export const USER_URI = "https://reqres.in/";
+export const USER_URI = "https://reqres.in";
   // context === "PROD"
   //   ? ""
   //   : window.location.hostname === "localhost"

@@ -2,7 +2,7 @@ import React from "react";
 import Routes from "./components/Routes";
 // import "bootstrap/dist/css/bootstrap.min.css";
 import "antd/dist/antd.css";
-import "./App.css";
+// import "./App.css";
 
 
 

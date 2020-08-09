@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { 
     Layout, Card, Avatar,notification,Button, Input,DatePicker,Tooltip,TimePicker,Modal,Badge,Statistic,Divider,
-    Comment, Form,List,Rate,Drawer
+    Comment, Form,List,Rate,Drawer,Skeleton,Empty,Pagination
 } from 'antd';
 import { EditOutlined, EllipsisOutlined, SettingOutlined,LikeOutlined,CoffeeOutlined,HeartOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -48,9 +48,15 @@ class Recipe extends Component {
     state = {
 
         userId: "",
-        user: "",
+        user: null,
         name: "",
+        firstName: "",
+        lastName:"",
         email: "",
+        userArray : [],
+        currentPage: 1,
+        totalUsers: 0,
+        pageLoading: false,
         slotModal: false,
         description : "",
         id: "",
@@ -69,31 +75,25 @@ class Recipe extends Component {
     }
 
     componentDidMount() {
-        if (JSON.parse(localStorage.getItem("user"))) {
-          console.log(JSON.parse(localStorage.getItem("user")).user);
-          this.setState({
-            userId : JSON.parse(localStorage.getItem("user")).user._id,
-            name : JSON.parse(localStorage.getItem("user")).user.name,
-            email: JSON.parse(localStorage.getItem("user")).user.email,
-          });
-          this._getFoodsInfo();
-          notification.success({
-                message: "Recipe panel Opened",
-                placement: "bottomRight",
-              });
+       
+        this._getUsersInfo();
+        notification.success({
+            message: "Welcome!!!!",
+            placement: "bottomRight",
+            });
         }
 
-      }
-
-      _getFoodsInfo = () => {
-        let foodDetails = fetchAllUsers();
-        foodDetails.then((res, err) => {
+      _getUsersInfo = () => {
+        let usersDetails = fetchAllUsers(this.state.currentPage);
+        usersDetails.then((res, err) => {
           if (err) console.log(err);
           else {
             console.log(res);
             this.setState(
               { 
-                foodArray : res,
+                foodArray : res.data,
+                userArray: res.data,
+                totalUsers: res.total
                },
             );
           }
@@ -307,198 +307,87 @@ class Recipe extends Component {
             </Modal>
           );
 
-          
 
-          const foodCards = this.state.foodArray.map((food) => (
-            <div className="col-md-4" style={{marginTop: 5 }}>
-                <Card
-                    style={{ width: 300 }}
-                    cover={
-                    <img
-                        alt="food"
-                        src= {food.image}
-                        style = {{ width : "100%" , height: "175px" }}
+          let content = (
+            <div>
+              <List
+                itemLayout="horizontal"
+                dataSource={this.state.userArray}
+                renderItem={(user) => (
+                  <List.Item
+                    className="list-item"
+                    style={{
+                      padding: "1.5%",
+                      paddingTop: "2.5%",
+                    }}
+                  >
+                    <List.Item.Meta
+                      avatar={
+                        <Avatar
+                            src={user.avatar}
+                        >
+                        </Avatar>
+                      }
+                      title={
+                        <span style={{ fontSize: "18px", fontWeight: "500" }}>
+                          {user.first_name} {user.last_name}
+                        </span>
+                      }
+                      description={
+                        <div>
+                          <p>
+                            <span style={{ color: "#16bdc8" }}>{user.id}</span>
+                            <Divider type="vertical" />
+      
+                            <span style={{ fontSize: "12px" }}>{user.email}</span>
+      
+                            <Divider type="vertical" />
+                          </p>
+                        </div>
+                      }
+                      onClick={() => {
+                        this.setState({ selectedUser: user }, () => {
+                          console.log(this.state.selectedUser.isCustomerAdmin)
+                          this.setState({ userModal: true });
+                        });
+                      }}
+                      style={{ cursor: "pointer" }}
                     />
-                    }
-                    actions={[
-                        <Tooltip title="settings">
-                        <SettingOutlined key="setting" />
-                        </Tooltip>,
-                        <Tooltip title="Booking">
-                        <EditOutlined
-                            key="order"
-                            onClick={() => {
-                            this.setState({
-                                slotModal: true,
-                                id: food.id,
-                                name: food.name,
-                                category: food.category,
-                                label: food.label,
-                                price: food.price,
-                                total: food.price,
-                                description: food.description,
-                                image : food.image
-                            });
-                        }}
-                        />
-                        </Tooltip>,
-                        <Tooltip title="View">
-                        <EllipsisOutlined 
-                            key="ellipsis"
-                            onClick={() => {
-                            this.setState({
-                                visible: true,
-                                id: food.id,
-                                name: food.name,
-                                category: food.category,
-                                label: food.label,
-                                price: food.price,
-                                total: food.price,
-                                description: food.description,
-                                image: food.image
-                            });
-                        }}
-                         />
-                        </Tooltip>,
-                    ]}
-                >
-                    <Meta
-                    // avatar={<Avatar src={Logo} alt="Logo" />}
-                    title={food.name}
-                    description={food.description}
-                    />
-                </Card>
+                  </List.Item>
+                )}
+              />
             </div>
+          );
 
-          ));
 
         return (
-          <div style={{ margin : 50 }}>
-            <Layout>
-              {createSlotModal}
-              
-                <Content className='content' style={{ padding: '0 50px' }}>
-
-                    <div 
-                        className="row"
-                        style = {{ marginBottom: 50 }}
-                    >
-                        {foodCards}
-                    </div>
-                    <Drawer
-                    title={this.state.name}
-                    width={900}
-                    onClose={this.onClose}
-                    visible={this.state.visible}
-                    bodyStyle={{ paddingBottom: 80 }}
-                    footer={
-                    <div
-                        style={{
-                            textAlign: 'right',
-                        }}
-                        >
-                        <Button onClick={this.onClose} style={{ marginRight: 8 }}>
-                            Cancel
-                        </Button>
-                        <Button 
-                        onClick={(e) => {
-                            this.setState({
-                                visible: false,
-                                slotModal: true
-                                });
-                            }} 
-                            type="primary">
-                            Order Now
-                        </Button>
-                    </div>
-                    }
-                    >
-                    <div className="row" style={{marginTop: 50}}>
-                    <div className="col-md-6" style={{marginTop: 5 }}>
-                        <img
-                            alt="food"
-                            src= {this.state.image}
-                            style = {{ width : "75%",height: "200px"}}
-                        />
-                        <Divider />
-                        <h5>Ingredients: </h5>
-                        <div>
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged
-                        </div>
-
-                        <Divider />
-                        <h5>How to prepare : </h5>
-                        <div>
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages.
-                        </div>
-
-                    </div>
-                    <div 
-                        className="col-md-6"
-                         style={{
-                            marginTop: 5,
-                            textAlign: "right"
-                            
-                         }}>
-                        <h2>{this.state.name}</h2>
-                        <p>
-                            <Rate disabled defaultValue={5} />
-                        </p>
-
-                        <p>Description</p>
-                        <h6>
-                            {this.state.description}
-                        </h6>
-
-                        <div className="row" style={{marginTop: 30}}>
-                            <div className="col-sm-4">
-                                <Statistic title="Likes" value={1128} prefix={<LikeOutlined />} />
-                            </div>
-                            <div className="col-sm-4">
-                                <Statistic title="Calories" value={305} prefix={<CoffeeOutlined />} />
-                            </div>
-                            <div className="col-sm-4">
-                                <Statistic title="Feedback" value={806} prefix={<HeartOutlined />} />
-                            </div>
-                        </div>
-
-                        <div class="row">
-
-                        </div>
-                        <Divider />
-
-                         <div className="row">
-                             <div className="col-sm-12">
-                             {comments.length > 0 && <CommentList comments={comments} />}
-                                <Comment
-                                avatar={
-                                    <Avatar
-                                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                                    alt="Han Solo"
-                                    />
-                                }
-                                content={
-                                    <Editor
-                                    onChange={this.handleChange}
-                                    onSubmit={this.handleSubmit}
-                                    submitting={submitting}
-                                    value={value}
-                                    />
-                                }
-                                />
-                             </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                    </Drawer>
-                     
-                </Content>
+            <div style={{ padding: "2%" }}>
                 
-            </Layout>
-            {/* {viewFoodDetails} */}
-        </div>
+                    { this.state.userArray.length > 0 ? (
+                        content
+                        ) : (
+                        <Empty
+                            imageStyle={{
+                            height: 300,
+                            }}
+                            description={<h2 style={{ fontWeight: "200" }}>No Users yet!</h2>}
+                        >
+                        </Empty>
+                        )}
+                    <div style={{ textAlign: "center" }}>
+                        <Pagination
+                            current={this.state.currentPage}
+                            onChange={(page) => {
+                            this.setState({ currentPage: page }, () => {
+                                this._getUsersInfo();
+                            });
+                            }}
+                            total={this.state.totalUsers}
+                        />
+                    </div>
+                    
+            
+            </div>
         )
     }
 }

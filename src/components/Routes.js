@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import Home from "./Home"
+import Recipe from "./Recipe"
 
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
@@ -31,6 +32,7 @@ class Routes extends Component {
         <Router>
             <Switch>
                 <Route exact path="/" component={Home} />
+                <Route exact path="/recipe" component={Recipe} />
             </Switch>
         </Router>
       

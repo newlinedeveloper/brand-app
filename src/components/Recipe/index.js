@@ -305,6 +305,8 @@ class Recipe extends Component {
           <div style={{ margin : 50 }}>
             {createSlotModal}
               { this.state.foodArray.length > 0 ? (
+                //   <div>
+                  
                     <List
                         grid={{
                             gutter: 16,
@@ -378,7 +380,8 @@ class Recipe extends Component {
                                 </Card>
                             {/* </div> */}
                             </List.Item>
-                
+
+                            // </div>
                         )}
                     />
                     ) : (

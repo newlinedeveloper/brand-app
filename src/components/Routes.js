@@ -31,8 +31,9 @@ class Routes extends Component {
     return (
         <Router>
             <Switch>
-                <Route exact path="/" component={Home} />
-                <Route exact path="/recipe" component={Recipe} />
+                <Route path="/" component={Recipe} />
+                <Route exact path="/users" component={Home} />
+                <Route exact path="/recipes" component={Recipe} />
             </Switch>
         </Router>
       

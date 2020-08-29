@@ -6,8 +6,9 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import Home from "./Home"
-import Recipe from "./Recipe"
+// import Home from "./Home"
+// import Recipe from "./Recipe"
+import Dashboard from "./Brand"
 
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
@@ -31,9 +32,10 @@ class Routes extends Component {
     return (
         <Router>
             <Switch>
-                <Route path="/" component={Recipe} />
-                <Route exact path="/users" component={Home} />
-                <Route exact path="/recipes" component={Recipe} />
+                <Route path="/" component={Dashboard} />
+                <Route exact path="/dashboard" component={Dashboard} />
+                {/* <Route path="/users" component={Home} />
+                <Route path="/recipes" component={Recipe} /> */}
             </Switch>
         </Router>
       

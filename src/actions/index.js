@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SERVER_URI, APP_KEY,USER_URI,FOOD_URI } from "../globals";
+import { SERVER_URI, APP_KEY,USER_URI,FOOD_URI,BRAND_URI } from "../globals";
 
 
 export const fetchAllUsers = async (pageId) => {
@@ -21,6 +21,20 @@ export const fetchAllUsers = async (pageId) => {
 export const fetchAllFoods = async () => {
   try {
     const resObj = await fetch(FOOD_URI + `/recipe`, {
+      method: "get",
+    });
+
+    const res = await resObj.json();
+    return res;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+};
+
+export const fetchAllBrands = async () => {
+  try {
+    const resObj = await fetch(BRAND_URI , {
       method: "get",
     });
 

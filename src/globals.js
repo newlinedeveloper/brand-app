@@ -2,6 +2,8 @@
 export const SERVER_URI = "http://localhost:8000/api";
 export const USER_URI = "https://reqres.in";
 export const FOOD_URI = "http://starlord.hackerearth.com";
+export const BRAND_URI = "http://starlord.hackerearth.com/TopRamen";
+
   // context === "PROD"
   //   ? ""
   //   : window.location.hostname === "localhost"
